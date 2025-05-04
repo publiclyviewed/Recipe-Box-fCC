@@ -33,33 +33,82 @@ function App() {
     }
   ];
 
-  // Load recipes from localStorage or default
+  // Load recipes from localStorage
   useEffect(() => {
-    const saved = localStorage.getItem("recipebox_recipes");
-    if (saved) {
-      setRecipes(JSON.parse(saved));
-    } else {
+    try {
+      const saved = localStorage.getItem("recipebox_recipes");
+      const parsed = saved ? JSON.parse(saved) : null;
+
+      if (Array.isArray(parsed)) {
+        setRecipes(parsed);
+      } else {
+        setRecipes(defaultRecipes);
+        localStorage.setItem("recipebox_recipes", JSON.stringify(defaultRecipes));
+      }
+    } catch (err) {
+      console.error("Failed to parse recipes from localStorage", err);
       setRecipes(defaultRecipes);
-      localStorage.setItem("recipebox_recipes", JSON.stringify(defaultRecipes));
     }
   }, []);
 
+  // Save recipes if changed
+  const [hasLoaded, setHasLoaded] = useState(false);
+
   useEffect(() => {
-    localStorage.setItem("recipebox_recipes", JSON.stringify(recipes));
-  }, [recipes]);
+    try {
+      const saved = localStorage.getItem("recipebox_recipes");
+      console.log("Loaded from localStorage:", saved);
+      const parsed = saved ? JSON.parse(saved) : null;
+  
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        setRecipes(parsed);
+      } else {
+        setRecipes(defaultRecipes);
+        localStorage.setItem("recipebox_recipes", JSON.stringify(defaultRecipes));
+      }
+    } catch (err) {
+      console.error("Failed to parse recipes from localStorage", err);
+      setRecipes(defaultRecipes);
+    } finally {
+      setHasLoaded(true);
+    }
+  }, []);
+  
+  useEffect(() => {
+    if (hasLoaded) {
+      localStorage.setItem("recipebox_recipes", JSON.stringify(recipes));
+    }
+  }, [recipes, hasLoaded]);
+  
 
   const toggleTheme = () => {
     setTheme(prev => (prev === "light" ? "dark" : "light"));
   };
 
   const addRecipe = (recipe) => {
-    const newRecipe = { ...recipe, id: uuidv4() };
+    if (!recipe.name.trim() || !recipe.ingredients.length) {
+      alert("Recipe must have a name and at least one ingredient.");
+      return;
+    }
+
+    const newRecipe = {
+      ...recipe,
+      id: uuidv4(),
+      image: recipe.image || "https://via.placeholder.com/150"
+    };
+
     setRecipes([...recipes, newRecipe]);
     setShowForm(false);
   };
 
   const updateRecipe = (updated) => {
-    setRecipes(recipes.map(r => r.id === updated.id ? updated : r));
+    if (!updated.name.trim() || !updated.ingredients.length) {
+      alert("Recipe must have a name and at least one ingredient.");
+      return;
+    }
+
+    const image = updated.image || "https://via.placeholder.com/150";
+    setRecipes(recipes.map(r => r.id === updated.id ? { ...updated, image } : r));
     setIsEditing(false);
     setSelectedRecipe(null);
   };
@@ -72,10 +121,17 @@ function App() {
   return (
     <div className={`App ${theme}`}>
       <h1>📦 My Recipe Box</h1>
+
       <button onClick={toggleTheme}>
         Toggle {theme === "light" ? "Dark" : "Light"} Mode
       </button>
-      <button onClick={() => setShowForm(true)}>Add Recipe</button>
+      <button onClick={() => {
+        setIsEditing(false);
+        setSelectedRecipe(null);
+        setShowForm(true);
+      }}>
+        Add Recipe
+      </button>
 
       <RecipeList
         recipes={recipes}
