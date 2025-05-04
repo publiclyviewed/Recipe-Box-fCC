@@ -4,12 +4,14 @@ function RecipeForm({ onSave, onCancel, initialData }) {
   const [name, setName] = useState("");
   const [ingredients, setIngredients] = useState("");
   const [image, setImage] = useState("");
+  const [instructions, setInstructions] = useState("");
 
   useEffect(() => {
     if (initialData) {
       setName(initialData.name);
       setIngredients(initialData.ingredients.join(", "));
       setImage(initialData.image || "");
+      setInstructions(initialData.instructions || "");
     }
   }, [initialData]);
 
@@ -20,6 +22,7 @@ function RecipeForm({ onSave, onCancel, initialData }) {
       name,
       ingredients: ingredients.split(",").map(i => i.trim()).filter(Boolean),
       image,
+      instructions,
     };
 
     onSave(recipe);
@@ -47,8 +50,16 @@ function RecipeForm({ onSave, onCancel, initialData }) {
           placeholder="List ingredients here, separated by commas (e.g., Rice, Nori, Salmon)"
           value={ingredients}
           onChange={(e) => setIngredients(e.target.value)}
+          rows={4}
+          style={{ width: "100%", padding: "0.5rem", marginTop: "1rem" }}
+          required
+        />
+        <textarea
+          placeholder="Enter instructions here (e.g., Mix, bake for 20 mins...)"
+          value={instructions}
+          onChange={(e) => setInstructions(e.target.value)}
           rows={5}
-          style={{ width: "100%", padding: "0.5rem" }}
+          style={{ width: "100%", padding: "0.5rem", marginTop: "1rem" }}
           required
         />
         <br />

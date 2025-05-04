@@ -14,8 +14,18 @@ function RecipeView({ recipe, onClose }) {
   }, [recipe]);
 
   return (
-    <div className="recipe-view">
+    <div className="recipe-view" style={{
+      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+      padding: '2rem',
+      borderRadius: '10px',
+      maxWidth: '600px',
+      margin: '2rem auto',
+      boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)'
+    }}>
+     <div classname="section-box">
       <h2>{recipe.name}</h2>
+      </div>
+
       {recipe.image && (
         <img
           src={recipe.image}
@@ -23,13 +33,27 @@ function RecipeView({ recipe, onClose }) {
           style={{ maxWidth: "100%", borderRadius: "8px", marginBottom: "1rem" }}
         />
       )}
-      <h4>Ingredients:</h4>
-      <ul style={{ lineHeight: '1.6' }}>
-        {recipe.ingredients.map((ing, i) => (
-          <li key={i}>{ing}</li>
-        ))}
-      </ul>
-      <button onClick={onClose} style={{ marginTop: "1rem" }}>Close</button>
+
+<div className="section-box">
+  <h4>Ingredients:</h4>
+  <p>{recipe.ingredients.join(', ')}</p>
+</div>
+
+<div className="section-box">
+  <h4>Instructions:</h4>
+  <p>{recipe.instructions || "No instructions provided."}</p>
+</div>
+
+
+      <button onClick={onClose} style={{
+        marginTop: "1rem",
+        padding: '0.5rem 1rem',
+        backgroundColor: '#333',
+        color: '#fff',
+        border: 'none',
+        borderRadius: '4px',
+        cursor: 'pointer'
+      }}>Close</button>
     </div>
   );
 }

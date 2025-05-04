@@ -17,69 +17,42 @@ function App() {
       id: "1",
       name: "Miso Soup",
       ingredients: ["Miso paste", "Dashi", "Tofu", "Green onions", "Wakame"],
-      image: "https://www.japanesecooking101.com/wp-content/uploads/2012/03/IMG_3950.jpeg"
+      image: "https://www.japanesecooking101.com/wp-content/uploads/2012/03/IMG_3950.jpeg",
+      instructions: "1. Dissolve miso paste in hot dashi. 2. Add tofu and wakame. 3. Simmer for 5 minutes."
     },
     {
       id: "2",
       name: "Onigiri",
       ingredients: ["Cooked rice", "Nori", "Salt", "Umeboshi", "Tuna mayo"],
-      image: "https://www.japanesecooking101.com/wp-content/uploads/2012/03/IMG_3950.jpeg"
+      image: "https://www.japanesecooking101.com/wp-content/uploads/2012/03/IMG_3950.jpeg",
+      instructions: "1. Take rice and form into a triangle shape. 2. Place umeboshi or tuna mayo in the center. 3. Wrap with nori."
     },
     {
       id: "3",
       name: "Tamagoyaki",
       ingredients: ["Eggs", "Soy sauce", "Sugar", "Mirin", "Oil"],
-      image: "https://www.japanesecooking101.com/wp-content/uploads/2018/09/DSC00264b.jpg"
+      image: "https://www.japanesecooking101.com/wp-content/uploads/2018/09/DSC00264b.jpg",
+      instructions: "1. Whisk eggs with soy sauce, sugar, and mirin. 2. Cook in layers in a hot pan. 3. Roll up the layers as they cook."
     }
   ];
 
-  // Load recipes from localStorage
+  // Load recipes from localStorage or default
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("recipebox_recipes");
-      const parsed = saved ? JSON.parse(saved) : null;
-
-      if (Array.isArray(parsed)) {
-        setRecipes(parsed);
-      } else {
-        setRecipes(defaultRecipes);
-        localStorage.setItem("recipebox_recipes", JSON.stringify(defaultRecipes));
-      }
-    } catch (err) {
-      console.error("Failed to parse recipes from localStorage", err);
+    const saved = localStorage.getItem("recipebox_recipes");
+    if (saved) {
+      setRecipes(JSON.parse(saved));
+    } else {
       setRecipes(defaultRecipes);
+      localStorage.setItem("recipebox_recipes", JSON.stringify(defaultRecipes));
     }
   }, []);
 
-  // Save recipes if changed
-  const [hasLoaded, setHasLoaded] = useState(false);
-
+  // Update localStorage whenever recipes change
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("recipebox_recipes");
-      console.log("Loaded from localStorage:", saved);
-      const parsed = saved ? JSON.parse(saved) : null;
-  
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        setRecipes(parsed);
-      } else {
-        setRecipes(defaultRecipes);
-        localStorage.setItem("recipebox_recipes", JSON.stringify(defaultRecipes));
-      }
-    } catch (err) {
-      console.error("Failed to parse recipes from localStorage", err);
-      setRecipes(defaultRecipes);
-    } finally {
-      setHasLoaded(true);
-    }
-  }, []);
-  
-  useEffect(() => {
-    if (hasLoaded) {
+    if (recipes.length > 0) {
       localStorage.setItem("recipebox_recipes", JSON.stringify(recipes));
     }
-  }, [recipes, hasLoaded]);
-  
+  }, [recipes]);
 
   const toggleTheme = () => {
     setTheme(prev => (prev === "light" ? "dark" : "light"));
@@ -91,14 +64,9 @@ function App() {
       return;
     }
 
-    const newRecipe = {
-      ...recipe,
-      id: uuidv4(),
-      image: recipe.image || "https://via.placeholder.com/150"
-    };
-
-    setRecipes([...recipes, newRecipe]);
-    setShowForm(false);
+    const newRecipe = { ...recipe, id: uuidv4() };
+    setRecipes([...recipes, newRecipe]); // Update the state
+    setShowForm(false); // Close the form
   };
 
   const updateRecipe = (updated) => {
@@ -107,31 +75,23 @@ function App() {
       return;
     }
 
-    const image = updated.image || "https://via.placeholder.com/150";
-    setRecipes(recipes.map(r => r.id === updated.id ? { ...updated, image } : r));
-    setIsEditing(false);
-    setSelectedRecipe(null);
+    setRecipes(recipes.map(r => r.id === updated.id ? updated : r)); // Update the recipe in state
+    setIsEditing(false); // End editing mode
+    setSelectedRecipe(null); // Close the selected recipe
   };
 
   const deleteRecipe = (id) => {
-    setRecipes(recipes.filter(r => r.id !== id));
-    setSelectedRecipe(null);
+    setRecipes(recipes.filter(r => r.id !== id)); // Filter out the recipe to delete
+    setSelectedRecipe(null); // Close the selected recipe
   };
 
   return (
     <div className={`App ${theme}`}>
       <h1>📦 My Recipe Box</h1>
-
       <button onClick={toggleTheme}>
         Toggle {theme === "light" ? "Dark" : "Light"} Mode
       </button>
-      <button onClick={() => {
-        setIsEditing(false);
-        setSelectedRecipe(null);
-        setShowForm(true);
-      }}>
-        Add Recipe
-      </button>
+      <button onClick={() => setShowForm(true)}>Add Recipe</button>
 
       <RecipeList
         recipes={recipes}
