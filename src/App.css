@@ -1,31 +1,24 @@
-/* App.css */
+/* App component styles */
 #root {
   max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-  background-size: cover; /* Ensure the background image covers the entire container */
+  background-size: cover;
   background-position: center;
-  min-height: 100vh; /* Ensure it covers full height */
-}
-
-body {
-  margin: 0;
-  font-family: 'Helvetica Neue', sans-serif;
-  background-color: #f8f4ec;
-  color: #333;
+  min-height: 100vh;
 }
 
 .App {
   max-width: 800px;
   margin: 40px auto;
   padding: 20px;
-  background: rgba(255, 253, 246, 0.9); /* Slight transparency to show the background image */
+  background: rgba(255, 253, 246, 0.9);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   border: 1px solid #e0dccc;
   min-height: 80vh;
-  transition: background-image 0.3s ease; /* Smooth transition when changing background */
+  transition: background-image 0.3s ease;
 }
 
 h1 {
@@ -33,21 +26,6 @@ h1 {
   font-size: 2.2rem;
   color: #4b3b2a;
   margin-bottom: 24px;
-}
-
-button {
-  background: #c8a97e;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  margin: 4px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-button:hover {
-  background: #b48760;
 }
 
 input, textarea {
@@ -147,4 +125,21 @@ li:hover {
   color: #f4f4f4;
 }
 
+.App.dark li {
+  background: #2e2e2e;
+  border: 1px solid #444;
+  color: #f4f4f4; /* <-- Add this */
+}
 
+.App.dark li strong {
+  color: #f4f4f4; /* <-- Optional, for emphasis if you have different shades */
+}
+
+/* Light mode (default) */
+.App li {
+  color: #333; /* or #000 if you want darker */
+}
+
+.App li strong {
+  color: #222; /* a bit bolder for emphasis */
+}

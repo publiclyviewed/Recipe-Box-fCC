@@ -3,7 +3,7 @@ import React from 'react';
 function RecipeList({ recipes, onSelect, onDelete, onEdit }) {
   return (
     <div>
-      <h2>Recipes</h2>
+      <div className="section-box"><h2>Recipes</h2></div>
       {recipes.length > 0 ? (
         <ul>
           {recipes.map(recipe => (

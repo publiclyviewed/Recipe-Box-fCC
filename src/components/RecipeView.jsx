@@ -22,7 +22,7 @@ function RecipeView({ recipe, onClose }) {
       margin: '2rem auto',
       boxShadow: '0 4px 10px rgba(0, 0, 0, 0.2)'
     }}>
-     <div classname="section-box">
+     <div className="section-box">
       <h2>{recipe.name}</h2>
       </div>
 
